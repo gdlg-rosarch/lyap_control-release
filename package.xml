@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>lyap_control</name>
-  <version>0.0.7</version>
+  <version>0.0.8</version>
   <description>A node to control nonlinear dynamic systems</description>
 
    <maintainer email="andyz@utexas.edu">Andy Zelenak</maintainer>
