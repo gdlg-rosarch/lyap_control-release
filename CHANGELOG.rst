@@ -2,6 +2,9 @@
 Changelog for package lyap_control
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.0.8 (2015-03-14)
+------------------
+
 0.0.7 (2015-03-13)
 ------------------
 * Still futzing to get documentation and author info right.

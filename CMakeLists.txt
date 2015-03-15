@@ -101,6 +101,7 @@ catkin_package(
 #  include/lyap_control/
   #${catkin_INCLUDE_DIRS}
 #)
+include_directories(include ${catkin_INCLUDE_DIRS})
 
 ## Declare a cpp library
 # add_library(lyap_control
@@ -109,15 +110,27 @@ catkin_package(
 
 ## Declare a cpp executable
 #add_executable(lyap_control_node src/lyap_control_node.cpp)
+add_executable(controller src/controller.cpp)
+add_executable(first_order_plant src/first_order_plant_sim.cpp)
+add_executable(second_order_plant src/second_order_plant_sim.cpp)
+add_executable(jog_plant src/jog_plant.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 # add_dependencies(lyap_control_node lyap_control_generate_messages_cpp)
+add_dependencies(controller lyap_control_generate_messages_cpp)
+add_dependencies(first_order_plant lyap_control_generate_messages_cpp)
+add_dependencies(second_order_plant lyap_control_generate_messages_cpp)
+add_dependencies(jog_plant lyap_control_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(lyap_control_node
 #   ${catkin_LIBRARIES}
 # )
+target_link_libraries(controller ${catkin_LIBRARIES})
+target_link_libraries(first_order_plant ${catkin_LIBRARIES})
+target_link_libraries(second_order_plant ${catkin_LIBRARIES})
+target_link_libraries(jog_plant ${catkin_LIBRARIES})
 
 #############
 ## Install ##
@@ -134,18 +147,18 @@ catkin_package(
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS lyap_control lyap_control_node
-#   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+install(TARGETS controller first_order_plant second_order_plant jog_plant
+#  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+#  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
 ## Mark cpp header files for installation
-#install(DIRECTORY include/${PROJECT_NAME}/
-#   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-#   FILES_MATCHING PATTERN "*.h"
-#   PATTERN ".svn" EXCLUDE
-#)
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  FILES_MATCHING PATTERN "*.h"
+  PATTERN ".svn" EXCLUDE
+)
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
 # install(FILES
@@ -166,22 +179,3 @@ catkin_package(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
-
-
-include_directories(include ${catkin_INCLUDE_DIRS})
-
-add_executable(controller src/controller.cpp)
-target_link_libraries(controller ${catkin_LIBRARIES})
-add_dependencies(controller lyap_control_generate_messages_cpp)
-
-add_executable(first_order_plant src/first_order_plant_sim.cpp)
-target_link_libraries(first_order_plant ${catkin_LIBRARIES})
-add_dependencies(first_order_plant lyap_control_generate_messages_cpp)
-
-add_executable(second_order_plant src/second_order_plant_sim.cpp)
-target_link_libraries(second_order_plant ${catkin_LIBRARIES})
-add_dependencies(second_order_plant lyap_control_generate_messages_cpp)
-
-add_executable(jog_plant src/jog_plant.cpp)
-target_link_libraries(jog_plant ${catkin_LIBRARIES})
-add_dependencies(jog_plant lyap_control_generate_messages_cpp)
