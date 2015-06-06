@@ -1,3 +1,24 @@
+## lyap_control (jade) - 0.0.8-0
+
+The packages in the `lyap_control` repository were released into the `jade` distro by running `/usr/bin/bloom-release lyap_control --track jade --rosdistro jade --new-track` on `Sat, 06 Jun 2015 15:40:51 -0000`
+
+The `lyap_control` package was released.
+
+Version of package(s) in repository `lyap_control`:
+- upstream repository: https://bitbucket.org/AndyZe/lyap_control.git
+- release repository: unknown
+- rosdistro version: `null`
+- old version: `null`
+- new version: `0.0.8-0`
+
+Versions of tools used:
+- bloom version: `0.5.20`
+- catkin_pkg version: `0.2.8`
+- rosdep version: `0.11.2`
+- rosdistro version: `0.4.2`
+- vcstools version: `0.1.36`
+
+
 ## lyap_control (indigo) - 0.0.8-0
 
 The packages in the `lyap_control` repository were released into the `indigo` distro by running `/usr/bin/bloom-release --rosdistro indigo --track indigo lyap_control` on `Sun, 15 Mar 2015 05:54:35 -0000`
