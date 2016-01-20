@@ -11,13 +11,19 @@
 // User-defined parameters
 /////////////////////////////////////////////////////////////////////////////////////////
 
-static const double V_dot_target_initial= -1000.0;
+static const double V_dot_target_initial= -100000.0;
 
 // Control frequency in Hz. Should be > the msg frequency that's published by the plant
 static const double rate = 200.0;
 
 static const double high_saturation_limit [] = {10.0};
 static const double low_saturation_limit []= {-10.0};
+
+// Parameter for V2 step location, gamma
+static const double g = 1.0;
+
+// Threshold for switching to the alternative Lyapunov function
+static const double switching_threshold = 0.01;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -219,14 +225,14 @@ void calculate_u(ublas_vector &D, ublas_vector &open_loop_dx_dt, const double &V
   // If all D_i's are ~0, use V2.
   int largest_D_index = index_norm_inf(D);
 
-  if ( fabs(D[largest_D_index]) > 0.1 ) // Use V1
+  if ( fabs(D[largest_D_index]) > switching_threshold ) // Use V1
   {
     ublas_vector P = element_prod(x-setpoint,open_loop_dx_dt); // x_i*x_i_dot
 
     // Start with the u that has the largest effect
     if ( fabs( D[largest_D_index] + ( sum( element_prod(D,D) ) - pow(D[largest_D_index],2.0) )/D[largest_D_index]) > 0.0001 ) 
-      u(largest_D_index) = (V_dot_target-sum(P)) / 
-        ( D[largest_D_index] + ( sum( element_prod(D,D) ) - pow(D[largest_D_index],2.0) )/D[largest_D_index] );
+      u(largest_D_index) = D[largest_D_index]*(V_dot_target-sum(P)) / 
+        sum( element_prod(D,D) );
 
     // Now scale the other u's (if any) according to u_max*Di/D_max
     for ( int i=0; i<num_inputs; i++ )
@@ -241,11 +247,15 @@ void calculate_u(ublas_vector &D, ublas_vector &open_loop_dx_dt, const double &V
 
   else // Use V2
   {
-    //MATLAB equivalent:
-    //dV2_dx = (x(epoch,:)-target_history(epoch,:))*...
-    //  (0.9+0.1*sum( (x(epoch,:)-target_history(epoch,:)).^2 ));
 
-    ublas_vector dV2_dx = (x-setpoint)*(0.9+0.1*sum( element_prod(x-setpoint,x-setpoint) ));
+    //ublas_vector dV2_dx = (x-setpoint)*(0.9+0.1*sum( element_prod(x-setpoint,x-setpoint) ));
+
+    ublas_vector dV2_dx = (x-setpoint)*(0.9+0.1*tanh(g)+0.05*sum( element_prod(x-setpoint,x-setpoint) )*pow(cosh(g),-2));
+
+    // The first entry in dV2_dx is unique because the step is specified in x1, so replace the previous
+    dV2_dx[0] = (x[0]-setpoint[0])*(0.9+0.1*tanh(g))+
+	0.05*sum(element_prod(x-setpoint,x-setpoint))*(pow((x[0]-setpoint[0]),-1)*tanh(g)+(x[0]-setpoint[0])*pow(cosh(g),-2));
+
 
     //MATLAB equivalent:
     //P_star = dV2_dx.*f_at_u_0(1:num_states);
@@ -262,8 +272,8 @@ void calculate_u(ublas_vector &D, ublas_vector &open_loop_dx_dt, const double &V
 
     ublas_vector D_star(num_inputs);
 
-    for (int i=0; i<num_inputs; i++)
-      for (int j=0; j<num_inputs; j++)
+    for (int i=0; i<num_inputs-1; i++)
+      for (int j=0; j<num_inputs-1; j++)
         D_star[i] = D_star[i]+dV2_dx[j]*dx_dot_du(i,j);
 
     // The first input is unique.
@@ -283,8 +293,7 @@ void calculate_u(ublas_vector &D, ublas_vector &open_loop_dx_dt, const double &V
 
      for (int i=1; i<num_inputs; i++)
      {
-       //u[i] = u[0]*D_star[i]/D_star(0);
-       u[i] = u[0]*D_star[i]/0.0;
+       u[i] = u[0]*D_star[i]/D_star(0);
      }
 
      // Check for NaN (caused by D_star(1)==0).
