@@ -113,7 +113,6 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 add_executable(controller src/controller.cpp)
 add_executable(first_order_plant src/first_order_plant_sim.cpp)
 add_executable(second_order_plant src/second_order_plant_sim.cpp)
-add_executable(jog_plant src/jog_plant.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
@@ -121,7 +120,6 @@ add_executable(jog_plant src/jog_plant.cpp)
 add_dependencies(controller lyap_control_generate_messages_cpp)
 add_dependencies(first_order_plant lyap_control_generate_messages_cpp)
 add_dependencies(second_order_plant lyap_control_generate_messages_cpp)
-add_dependencies(jog_plant lyap_control_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(lyap_control_node
@@ -130,7 +128,6 @@ add_dependencies(jog_plant lyap_control_generate_messages_cpp)
 target_link_libraries(controller ${catkin_LIBRARIES})
 target_link_libraries(first_order_plant ${catkin_LIBRARIES})
 target_link_libraries(second_order_plant ${catkin_LIBRARIES})
-target_link_libraries(jog_plant ${catkin_LIBRARIES})
 
 #############
 ## Install ##
@@ -147,7 +144,7 @@ target_link_libraries(jog_plant ${catkin_LIBRARIES})
 # )
 
 ## Mark executables and/or libraries for installation
-install(TARGETS controller first_order_plant second_order_plant jog_plant
+install(TARGETS controller first_order_plant second_order_plant
 #  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
