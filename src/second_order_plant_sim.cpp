@@ -2,7 +2,7 @@
 // and subscribes to a 'control_effort' topic. The control effort is used
 // to stabilize the plant.
 
-#include "lyap_control/second_order_plant_header.h"
+#include "lyap_control/second_order_plant.h"
 
 
 int main(int argc, char **argv)
@@ -32,6 +32,9 @@ int main(int argc, char **argv)
 
   ros::Rate loop_rate(1/delta_t); // Control rate in Hz
 
+  ROS_INFO("Waiting 3s for rqt_plot to load.");
+  ros::Duration d(3.0);
+  d.sleep();
 
   while (ros::ok())
   {
@@ -41,7 +44,7 @@ int main(int argc, char **argv)
 
     // Update the plant.
     x_dot[0] = 0.1*msg.x[0]+u[0];
-    x_dot[1] = 0.1*msg.x[1]+u[1];
+    x_dot[1] = 2.0*msg.x[1]+u[1];
 
     msg.x[0] = msg.x[0]+x_dot[0]*delta_t;
     msg.x[1] = msg.x[1]+x_dot[1]*delta_t;
