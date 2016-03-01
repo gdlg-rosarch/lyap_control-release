@@ -9,42 +9,35 @@ typedef boost::numeric::ublas::vector <double> ublas_vector;
 #include <boost/math/special_functions/fpclassify.hpp>
 
 #include "ros/ros.h"
-
-// Header for 'plant_msg.msg'
 #include "lyap_control/plant_msg.h"
-// Header for controller_msg.msg
 #include "lyap_control/controller_msg.h"
+#include "lyap_control/controller_globals.h"
 
-/////////////////////////////////////////////////////////////////////////////
-// These variables need to be global b/c a ROS callback only takes 1 argument
-/////////////////////////////////////////////////////////////////////////////
-
-static double t=0; // time will be updated by listening to the 'plant' ROS topic
-static double V=0; //current Lyapunov value
-static double V_initial=0;
-static int first_callback=1; // 1 signals that the callback has not been run yet. Triggers setup calcs
-
-// Read the size of a plant_msg
-lyap_control::plant_msg temp_plant_msg; // Just to read the msg size
-const static int num_states = temp_plant_msg.x.size();
-
-// Message variable for the control effort message
-lyap_control::controller_msg  u_msg;
-// Read the size of a 'controller' message
-const static int num_inputs = u_msg.u.size();
-
-ublas_vector x(num_states);
-ublas_vector setpoint(num_states);
-ublas_vector u(num_inputs);
 
 ///////////////////////////////////////////////////////////////////////////////
-// User-defined parameters
+// User-defined parameters - MAKE YOUR CHANGES HERE
 ///////////////////////////////////////////////////////////////////////////////
 
+// 'Aggressiveness' of the controller, in dB
+static const double V_dot_target_initial_dB= -100.0;
 
-// Edit this header to define your own dynamic system:
-#include "lyap_control/model_definition.h"
+static const double high_saturation_limit [] = {10.0, 10.0};
+static const double low_saturation_limit []= {-10.0, -10.0};
 
+// Parameter for V2 step location, gamma
+static const double g = 1.0;
+
+// Threshold for switching to the alternative Lyapunov function
+static const double switching_threshold = 0.01;
+
+// The state space definition-- the dynamic equations of the model.
+// Calculates dx/dt
+// model_definition sees u b/c it's a global variable, it can't be an argument
+void model_definition(const ublas_vector &x, ublas_vector &dxdt, const double t)
+{
+  dxdt[0] = 0.1*x[0]+u[0];
+  dxdt[1] = 2.*x[1]+u[1];
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // Functions
