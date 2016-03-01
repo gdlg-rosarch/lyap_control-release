@@ -1,0 +1,5 @@
+<launch>
+	<node name="rqt_plot" pkg="rqt_plot" type="rqt_plot" args="/control_effort /state/setpoint /state/x" />
+	<node name="controller" pkg="lyap_control" type="controller" output="screen" />
+	<node name="plant" pkg="lyap_control" type="second_order_plant" output="screen" />
+</launch>
